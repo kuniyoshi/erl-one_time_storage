@@ -21,7 +21,8 @@ start_protocol_scheme(<<"http">>, Dispatch) ->
 start(_Type, _Args) ->
     Dispatch = cowboy_router:compile([{one_time_storage_config:hostname(),
                                        [{"/read/[:filename]", read_handler, []},
-                                        {"/write/[:filename]", write_handler, []}]}]),
+                                        {"/write/[:filename]", write_handler, []},
+                                        {"/static/[...]", cowboy_static, {dir, one_time_storage_config:path(), []}}]}]),
     start_protocol_scheme(one_time_storage_config:protocol_scheme(), Dispatch),
     one_time_storage_sup:start_link().
 
