@@ -15,7 +15,8 @@ reject_except_put(<<"PUT">>, Req) ->
             ok = file:write(IoDevice, Data),
             {ok, Data}
     end,
-    {ok, _Body, Req3} = cowboy_req:body(Req2, [{content_decode, Decoder}]),
+    {ok, _Body, Req3} = cowboy_req:body(Req2, [{content_decode, Decoder},
+                                               {length, 500000000}]),
     ok = file:close(IoDevice),
     cowboy_req:reply(200, [], <<"writed.">>, Req3);
 reject_except_put(_, Req) ->
