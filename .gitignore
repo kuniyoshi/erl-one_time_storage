@@ -1,0 +1,5 @@
+.erlang.mk.packages.v1
+_rel
+deps
+priv
+relx
