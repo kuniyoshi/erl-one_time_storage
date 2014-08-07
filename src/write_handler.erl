@@ -10,8 +10,13 @@ reject_except_put(<<"PUT">>, Req) ->
     {Filename, Req2} = cowboy_req:binding(filename, Req),
     Filename2 = filename:join(one_time_storage_config:path(),
                               filename:basename(binary_to_list(Filename))),
-    {ok, Bin, Req3} = cowboy_req:body(Req2),
-    ok = file:write_file(Filename2, Bin),
+    {ok, IoDevice} = file:open(Filename2, [write, raw]),
+    Decoder = fun(Data) ->
+            ok = file:write(IoDevice, Data),
+            {ok, Data}
+    end,
+    {ok, _Body, Req3} = cowboy_req:body(Req2, [{content_decode, Decoder}]),
+    ok = file:close(IoDevice),
     cowboy_req:reply(200, [], <<"writed.">>, Req3);
 reject_except_put(_, Req) ->
     cowboy_req:reply(405, Req).
